@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    env_file: .env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    env_file: .env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  # O serviço do banco de dados entra aqui quando o grupo decidir qual usar.
