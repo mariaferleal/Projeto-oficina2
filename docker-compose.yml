@@ -1,4 +1,6 @@
 services:
+  # - Front, Back e Banco de dados para ambiente de desenvolvimento
+  # * Usar profile para rodar: "docker compose --profile dev up"
   frontend:
     build: ./frontend
     ports:
@@ -18,5 +20,73 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+    depends_on:
+      - postgres
+  
+  postgres:
+    image: postgres:17-alpine
+    container_name: blocoBot_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-  # O serviço do banco de dados entra aqui quando o grupo decidir qual usar.
+  # - Banco de Dados e BackEnd Exclusivos para Testes. 
+  # * Rode usando profile: "docker compose --profile test up"
+  # Frontend exclusivo para os testes automatizados
+  frontend_test:
+    build: ./frontend
+    container_name: blocoBot_frontend_test
+    profiles:
+      - test
+    ports:
+      - "5174:5173"
+    env_file: .env
+    environment:
+      # sobrescrevre para chamar o backend do teste
+      - VITE_API_URL=http://localhost:3001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend_test
+
+  backend_test:
+      build: ./backend
+      container_name: blocoBot_backend_test
+      profiles:
+        - test
+      ports:
+        - "3001:3000" # Exposto na 3001 pra evitar conflito
+      env_file: .env
+      environment:
+        # sobrescreve a variável de database para apontar para o banco de teste
+        - DATABASE_URL=postgresql://${DB_TEST_USER}:${DB_TEST_PASSWORD}@postgres_test:5432/${DB_TEST_NAME}
+      volumes:
+        - ./backend:/app
+        - /app/node_modules
+      depends_on:
+        - postgres_test
+
+  postgres_test:
+    image: postgres:17-alpine
+    container_name: blocoBot_db_test
+    profiles:
+      - test
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_TEST_USER}
+      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD}
+      POSTGRES_DB: ${DB_TEST_NAME}
+    ports:
+      - "${DB_TEST_PORT}:5432"
+    tmpfs:
+      - /var/lib/postgresql/data # Grava na RAM. Sem persistir dados (Precisa usar Seeds).
+
+volumes:
+  postgres_data:
