@@ -3,6 +3,8 @@ services:
   # * Usar profile para rodar: "docker compose --profile dev up"
   frontend:
     build: ./frontend
+    profiles:
+      - dev
     ports:
       - "5173:5173"
     env_file: .env
@@ -14,6 +16,8 @@ services:
 
   backend:
     build: ./backend
+    profiles:
+      - dev
     ports:
       - "3000:3000"
     env_file: .env
@@ -26,6 +30,8 @@ services:
   postgres:
     image: postgres:17-alpine
     container_name: blocoBot_db
+    profiles:
+      - dev
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}

@@ -22,7 +22,7 @@ Você precisa do Docker instalado.
 
 ```
 cp .env.example .env
-docker compose up --build
+docker compose --profile dev up --build
 ```
 
 - Interface em http://localhost:5173
