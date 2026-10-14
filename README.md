@@ -15,7 +15,7 @@ O BlocoBot é uma aplicação web educativa de programação em blocos. O usuár
 | [Testes](docs/testes.md) | Estratégia de testes automatizados ([plano e casos de teste](tests/)) |
 | [Processo e cronograma](docs/processo.md) | Scrum, issues, Kanban, definição de pronto e datas |
 
-Quadro Kanban: [BlocoBot — Kanban](https://github.com/users/LunnaFM/projects/1) (GitHub Projects). As histórias de usuário e tarefas de cada sprint estão nas [issues](https://github.com/mariaferleal/Projeto-oficina2/issues), organizadas pelos milestones Sprint 1 e Sprint 2.
+Quadro Kanban: [BlocoBot — Kanban](https://github.com/users/LunnaFM/projects/1) (GitHub Projects). As histórias de usuário e tarefas de cada sprint estão nas [issues](https://github.com/mariaferleal/Projeto-oficina2/issues), organizadas pelos milestones Sprint 0, Sprint 1 e Sprint 2.
 
 ## Equipe
 
@@ -69,10 +69,11 @@ Os testes também rodam sozinhos no GitHub Actions a cada envio de código. Veja
 
 ## Cronograma
 
-| Etapa | Entrega |
-|---|---|
-| Planejamento | 28/09 |
-| Sprint 1 | 16/10 (presencial) |
-| Sprint 2 | 30/11 |
+| Etapa | Período | Entrega |
+|---|---|---|
+| Planejamento | até 28/09 | Documento de planejamento |
+| Sprint 0 | 29/09 a 16/10 | Preparação, apresentada na reunião presencial de 16/10 |
+| Sprint 1 | 17/10 a 07/11 | Base da aplicação |
+| Sprint 2 | 08/11 a 30/11 | Entrega final em 30/11 |
 
 Detalhes de cada sprint em [`docs/processo.md`](docs/processo.md).
