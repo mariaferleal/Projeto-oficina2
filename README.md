@@ -15,7 +15,7 @@ O BlocoBot é uma aplicação web educativa de programação em blocos. O usuár
 | [Testes](docs/testes.md) | Estratégia de testes automatizados ([plano e casos de teste](tests/)) |
 | [Processo e cronograma](docs/processo.md) | Scrum, issues, Kanban, definição de pronto e datas |
 
-Quadro Kanban no Jira: _adicionar o link aqui_.
+Quadro Kanban: [BlocoBot — Kanban](https://github.com/users/LunnaFM/projects/1) (GitHub Projects). As histórias de usuário e tarefas de cada sprint estão nas [issues](https://github.com/mariaferleal/Projeto-oficina2/issues), organizadas pelos milestones Sprint 1 e Sprint 2.
 
 ## Equipe
 
