@@ -1,5 +1,5 @@
 **Navegação Rápida:** 
-[Matriz de Responsabilidades](./ResponsabilityMatrix.md) | [Casos de Teste](./TestCases-v4.md) | [Plano de Teste](./TestPlan-v1.0.md)
+[Matriz de Rastreabilidade](./ResponsabilityMatrix-v1.0.md) | [Casos de Teste](./TestCases-v4.md) | [Plano de Teste](./TestPlan-v1.0.md)
 
 ---
 # BlocoBot - Casos de Teste (v4.0)

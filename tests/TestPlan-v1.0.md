@@ -1,5 +1,5 @@
 **Navegação Rápida:** 
-[Matriz de Responsabilidades](./ResponsabilityMatrix.md) | [Casos de Teste](./TestCases-v4.md) | [Plano de Teste](./TestPlan-v1.0.md)
+[Matriz de Rastreabilidade](./ResponsabilityMatrix-v1.0.md) | [Casos de Teste](./TestCases-v4.md) | [Plano de Teste](./TestPlan-v1.0.md)
 
 ---
 
@@ -105,7 +105,7 @@
 
 ### **7. Entregáveis de Teste**
 
-* **Plano de Teste**: Documento vivo atualizado a cada *sprint* (versão atual `v0.1`).
+* **Plano de Teste**: Documento vivo atualizado a cada *sprint* (versão atual `v1.0`).
 * **Casos e Cenários de Teste**: Mapeamento detalhado dos cenários funcionais, unitários, de integração e E2E.
 * **Matriz de Responsabilidade / Rastreabilidade**: Relação entre Requisitos (RF/RNF), Casos de Teste e *Issues* no GitHub/Jira.
 * **Suítes de Teste Automatizadas**: Código fonte dos testes em Vitest, React Testing Library e Playwright no repositório.

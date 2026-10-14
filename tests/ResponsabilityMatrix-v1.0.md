@@ -1,11 +1,11 @@
 **Navegação Rápida:** 
-[Matriz de Responsabilidades](./ResponsabilityMatrix.md) | [Casos de Teste](./TestCases-v4.md) | [Plano de Teste](./TestPlan-v1.0.md)
+[Matriz de Rastreabilidade](./ResponsabilityMatrix-v1.0.md) | [Casos de Teste](./TestCases-v4.md) | [Plano de Teste](./TestPlan-v1.0.md)
 
 ---
 
-# BlocoBot - Matriz de Responsabilidade (1.0)
+# BlocoBot - Matriz de Rastreabilidade (1.0)
 
-| BlocoBot - Plano de Teste | Versão 1.0 |
+| BlocoBot - Matriz de Rastreabilidade | Versão 1.0 |
 | :--- | :---: |
 | **Preparado por** | Paulo André |
 | **Data** | 11/10/2026 |
@@ -20,18 +20,18 @@ Este documento apresenta a **Matriz de Rastreabilidade Bidirecional** mapeando a
 
 ## 1. Mapeamento por Requisitos Funcionais (RF01 a RF10)
 
-| ID Requisito | Descrição Resumida | Prioridade | Casos de Teste Relacionados | Módulos de Teste | Status de Cobertura |
+| ID Requisito | Descrição Resumida | Prioridade | Casos de Teste Relacionados | Módulos de Teste | Status (planejamento) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **RF01** | Autenticação exclusiva via Google OAuth 2.0 e criação de cadastro no 1º acesso. | Essencial | `CT-AUTH-01`, `CT-AUTH-02`, `CT-AUTH-03`, `CT-AUTH-04`, `CT-AUTH-05`, `CT-AUTH-06`, `CT-AUTH-07`, `CT-AUTH-08`, `CT-AUTH-09`, `CT-AUTH-10`, `CT-API-13` | Autenticação / API | **100% Coberto** |
-| **RF02** | Criar, montar, editar, reorganizar e limpar programa em blocos. | Essencial | `CT-BLK-01`, `CT-BLK-12`, `CT-BLK-13` | Editor Blockly | **100% Coberto** |
-| **RF03** | Blocos de deslocamento unitário (frente, trás, direita, esquerda) sem alterar orientação. | Essencial | `CT-BLK-01`, `CT-BLK-02`, `CT-BLK-03`, `CT-BLK-04` | Editor / Simulador | **100% Coberto** |
-| **RF04** | Bloco `Repetir` executando laço de 1 a 10 vezes. | Essencial | `CT-BLK-02` (N=1), `CT-BLK-03` (N=10), `CT-BLK-04` (N=5), `CT-BLK-05` (N<=0), `CT-BLK-06` (N>10), `CT-BLK-07` (dec/txt), `CT-BLK-08` (vazio) | Editor / Interpretador | **100% Coberto** |
-| **RF05** | Bloco `Se` verificando posição de borda e executando comandos internos quando verdadeiro. | Essencial | `CT-BLK-09` (na borda = True), `CT-BLK-10` (no centro = False) | Editor / Interpretador | **100% Coberto** |
-| **RF06** | Execução sequencial no robô virtual e retenção dentro da área visual de execução. | Essencial | `CT-BLK-01`, `CT-BLK-11` (retenção SVG) | Simulador SVG | **100% Coberto** |
-| **RF07** | Gerar e exibir automaticamente pseudocódigo Portugol equivalente. | Essencial | `CT-BLK-01`, `CT-BLK-02`, `CT-BLK-03`, `CT-BLK-04`, `CT-BLK-09`, `CT-BLK-10` | Gerador Portugol | **100% Coberto** |
-| **RF08** | Salvar programa e progresso associados à conta autenticada. | Essencial | `CT-API-01`, `CT-API-02`, `CT-API-03`, `CT-API-04`, `CT-API-10`, `CT-API-11` | API Express / PostgreSQL | **100% Coberto** |
-| **RF09** | Listar e reabrir programas salvos pelo próprio usuário. | Essencial | `CT-AUTH-02`, `CT-API-05`, `CT-API-06`, `CT-API-07`, `CT-API-08`, `CT-API-09` | API Express / PostgreSQL | **100% Coberto** |
-| **RF10** | Notificar o usuário quando o programa estiver incompleto, desconectado ou inconsistente. | Importante | `CT-BLK-05`, `CT-BLK-06`, `CT-BLK-08`, `CT-BLK-12`, `CT-API-02`, `CT-API-03`, `CT-API-04`, `CT-API-09` | Front-end / API | **100% Coberto** |
+| **RF01** | Autenticação exclusiva via Google OAuth 2.0 e criação de cadastro no 1º acesso. | Essencial | `CT-AUTH-01`, `CT-AUTH-02`, `CT-AUTH-03`, `CT-AUTH-04`, `CT-AUTH-05`, `CT-AUTH-06`, `CT-AUTH-07`, `CT-AUTH-08`, `CT-AUTH-09`, `CT-AUTH-10`, `CT-API-13` | Autenticação / API | **Coberto por casos de teste** |
+| **RF02** | Criar, montar, editar, reorganizar e limpar programa em blocos. | Essencial | `CT-BLK-01`, `CT-BLK-12`, `CT-BLK-13` | Editor Blockly | **Coberto por casos de teste** |
+| **RF03** | Blocos de deslocamento unitário (frente, trás, direita, esquerda) sem alterar orientação. | Essencial | `CT-BLK-01`, `CT-BLK-02`, `CT-BLK-03`, `CT-BLK-04` | Editor / Simulador | **Coberto por casos de teste** |
+| **RF04** | Bloco `Repetir` executando laço de 1 a 10 vezes. | Essencial | `CT-BLK-02` (N=1), `CT-BLK-03` (N=10), `CT-BLK-04` (N=5), `CT-BLK-05` (N<=0), `CT-BLK-06` (N>10), `CT-BLK-07` (dec/txt), `CT-BLK-08` (vazio) | Editor / Interpretador | **Coberto por casos de teste** |
+| **RF05** | Bloco `Se` verificando posição de borda e executando comandos internos quando verdadeiro. | Essencial | `CT-BLK-09` (na borda = True), `CT-BLK-10` (no centro = False) | Editor / Interpretador | **Coberto por casos de teste** |
+| **RF06** | Execução sequencial no robô virtual e retenção dentro da área visual de execução. | Essencial | `CT-BLK-01`, `CT-BLK-11` (retenção SVG) | Simulador SVG | **Coberto por casos de teste** |
+| **RF07** | Gerar e exibir automaticamente pseudocódigo Portugol equivalente. | Essencial | `CT-BLK-01`, `CT-BLK-02`, `CT-BLK-03`, `CT-BLK-04`, `CT-BLK-09`, `CT-BLK-10` | Gerador Portugol | **Coberto por casos de teste** |
+| **RF08** | Salvar programa e progresso associados à conta autenticada. | Essencial | `CT-API-01`, `CT-API-02`, `CT-API-03`, `CT-API-04`, `CT-API-10`, `CT-API-11` | API Express / PostgreSQL | **Coberto por casos de teste** |
+| **RF09** | Listar e reabrir programas salvos pelo próprio usuário. | Essencial | `CT-AUTH-02`, `CT-API-05`, `CT-API-06`, `CT-API-07`, `CT-API-08`, `CT-API-09` | API Express / PostgreSQL | **Coberto por casos de teste** |
+| **RF10** | Notificar o usuário quando o programa estiver incompleto, desconectado ou inconsistente. | Importante | `CT-BLK-05`, `CT-BLK-06`, `CT-BLK-08`, `CT-BLK-12`, `CT-API-02`, `CT-API-03`, `CT-API-04`, `CT-API-09` | Front-end / API | **Coberto por casos de teste** |
 
 ---
 
@@ -59,12 +59,11 @@ Este documento apresenta a **Matriz de Rastreabilidade Bidirecional** mapeando a
 | **RNF03** | Consistência | Interpretação idêntica de um programa entre o simulador e o código Portugol gerado. | `CT-BLK-01`, `CT-BLK-02`, `CT-BLK-03`, `CT-BLK-04`, `CT-BLK-09` | Testes de integração comparando estado SVG e texto Portugol. |
 | **RNF04** | Segurança & Privacidade | Armazenamento estritamente necessário e restrição ao próprio usuário. | `CT-AUTH-05`, `CT-AUTH-08`, `CT-API-08`, `CT-API-12`, `CT-API-13` | Validação de token JWT e autorização por `user_id`. |
 | **RNF05** | Manutenibilidade | Arquitetura modular (Editor, Interpretador, Simulador, Gerador, Auth, API). | `CT-AUTH-10`, `CT-API-14` | Isolamento de camadas e tratamento de falhas de banco. |
-| **RNF06** | Testabilidade | Automação de testes e relatório de cobertura atualizado ($\ge 80\%$). | Todos os Casos de Teste (`CT-AUTH-*`, `CT-BLK-*`, `CT-API-*`) | Suítes em Vitest, React Testing Library e Playwright no GitHub Actions. |
+| **RNF06** | Testabilidade | Automação de testes e relatório de cobertura atualizado (meta de pelo menos 80%). | Todos os Casos de Teste (`CT-AUTH-*`, `CT-BLK-*`, `CT-API-*`) | Suítes em Vitest, React Testing Library e Playwright no GitHub Actions. |
 
 ---
 
-## 4. Matriz Inversa: Casos de Teste $
-ightarrow$ Requisitos Cobertos
+## 4. Matriz Inversa: Casos de Teste → Requisitos Cobertos
 
 | Módulo de Teste | ID do Caso de Teste | Requisitos Funcionais | Regras de Negócio | Requisitos Não-Funcionais |
 | :--- | :--- | :--- | :--- | :--- |
