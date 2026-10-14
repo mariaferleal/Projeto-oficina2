@@ -3,7 +3,7 @@
 - **Metodologia:** Scrum com dois sprints de uma semana e revisão ao final de cada um.
 - **Issues:** cada funcionalidade é uma issue no GitHub, com critérios de aceite e testes esperados (baseados nos arquivos de `requisitos/`).
 - **Commits e pull requests:** sempre referenciam a issue correspondente (ex.: `feat: blocos de movimento (#12)`).
-- **Kanban:** quadro no Jira com as colunas Backlog, A fazer, Em andamento, Em revisão e Concluído. Cada card referencia a issue do GitHub.
+- **Kanban:** quadro no [GitHub Projects](https://github.com/users/LunnaFM/projects/1) com as colunas Backlog, A fazer, Em andamento, Em revisão e Concluído. Cada card é a própria issue, e as issues fechadas por pull request vão automaticamente para Concluído.
 - **Fim de cada sprint:** vídeo de até 5 minutos com a aplicação, as funcionalidades implementadas e a execução dos testes. Os ajustes pedidos pelo professor viram issues.
 
 ## Definição de pronto
@@ -13,7 +13,7 @@ Uma issue só vai para "Concluído" quando:
 - tem testes automatizados;
 - o pull request foi revisado e referencia a issue;
 - o CI está verde;
-- o card foi movido no Jira.
+- o card está em Concluído no quadro.
 
 ## Cronograma
 

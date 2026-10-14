@@ -12,7 +12,7 @@
 | Testes de ponta a ponta | Playwright |
 | Ambiente | Docker e Docker Compose |
 | Código e integração contínua | GitHub e GitHub Actions |
-| Organização das tarefas | Kanban no Jira (cada card referencia a issue do GitHub) |
+| Organização das tarefas | Kanban no GitHub Projects (cada card é a própria issue) |
 
 ## Decisões
 
