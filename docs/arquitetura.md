@@ -6,6 +6,12 @@ No front-end, o editor Blockly produz a estrutura do programa montado pelo usuá
 
 A API, em Node.js com Express, trata a autenticação e as operações sobre os programas salvos. O PostgreSQL armazena as contas, os programas e o progresso. Cada operação de leitura ou gravação verifica a identidade do usuário e a propriedade do programa.
 
+![Arquitetura do sistema](arquitetura.png)
+
+*Figura 1 — Arquitetura do sistema (a mesma do documento de planejamento).*
+
+O diagrama abaixo detalha os mesmos componentes e fluxos:
+
 ```mermaid
 flowchart LR
     U[Usuário] --> E[Editor Blockly]
