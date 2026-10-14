@@ -4,6 +4,8 @@
 
 O BlocoBot é uma aplicação web educativa na qual o usuário monta programas conectando blocos de comando. Esses programas controlam um robô virtual exibido na tela, que pode se mover para frente, para trás, para a direita e para a esquerda, além de contar com blocos de repetição e de condição (Se). Cada comando desloca o robô uma unidade visual, sem alterar sua orientação. Ao executar a sequência, a aplicação anima o robô passo a passo e apresenta o código equivalente em Portugol.
 
+A ferramenta foi pensada para apoiar as oficinas do projeto de extensão ELLP (Ensino Lúdico de Lógica e Programação) da UTFPR, sem integração com sistemas do projeto.
+
 O Portugol é exibido como material de consulta e aprendizagem: não é necessário digitá-lo, e o código é atualizado automaticamente sempre que o programa em blocos é alterado.
 
 ## Objetivo geral
@@ -31,7 +33,7 @@ Desenvolver uma aplicação web educativa de programação em blocos que permita
 ## Usuários do sistema
 
 - **Aprendiz:** usuário principal. Entra com a conta Google, cria e executa programas com blocos, consulta o código em Portugol e salva ou reabre seus programas.
-- **Educador ou monitor:** conduz atividades de lógica e programação com os estudantes. Na primeira versão, usa as mesmas funcionalidades do aprendiz; não há área administrativa.
+- **Educador ou monitor:** conduz atividades de lógica e programação com os estudantes, como os monitores das oficinas do ELLP. Na primeira versão, usa as mesmas funcionalidades do aprendiz; não há área administrativa.
 
 No primeiro acesso com Google, o sistema cria automaticamente o cadastro mínimo do usuário. Não há cadastro por senha nem outro provedor de autenticação.
 
