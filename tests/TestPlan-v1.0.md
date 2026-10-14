@@ -107,7 +107,7 @@
 
 * **Plano de Teste**: Documento vivo atualizado a cada *sprint* (versão atual `v1.0`).
 * **Casos e Cenários de Teste**: Mapeamento detalhado dos cenários funcionais, unitários, de integração e E2E.
-* **Matriz de Responsabilidade / Rastreabilidade**: Relação entre Requisitos (RF/RNF), Casos de Teste e *Issues* no GitHub/Jira.
+* **Matriz de Responsabilidade / Rastreabilidade**: Relação entre Requisitos (RF/RNF), Casos de Teste e *Issues* no GitHub.
 * **Suítes de Teste Automatizadas**: Código fonte dos testes em Vitest, React Testing Library e Playwright no repositório.
 * **Collection no Postman**: Coleção de requisições e asserções automatizadas para validação dos *endpoints* da API.
 * **Relatório de Execução, Bugs e Cobertura**: Registros de *issues* no GitHub e relatório de cobertura de código (*Code Coverage* >= 80%).
