@@ -2,4 +2,4 @@
 
 Interface em React com TypeScript. Aqui ficam a área de blocos, o palco do robô e o gerador de código em Portugol.
 
-Responsáveis: Mafe e Kenji.
+Responsáveis: Mafe e Kenji, com apoio da Luana.
