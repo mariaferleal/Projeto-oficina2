@@ -1,5 +1,6 @@
 {
   "name": "backend",
+  "type": "module",
   "version": "1.0.0",
   "description": "Servidor em Node com TypeScript. Cuida do cadastro, do login com Google e dos programas salvos.",
   "main": "index.js",
@@ -8,7 +9,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage -c ./vitest.config.ts"
   },
   "keywords": [],
   "author": "",
