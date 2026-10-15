@@ -1,29 +1,43 @@
 # Arquitetura em alto nível
 
-O usuário usa uma interface web em React, com a área de blocos e o palco do robô. O gerador de código fica junto da interface, então os blocos viram Portugol ou C sem depender do servidor. O servidor cuida de cadastro, login com Google e dos programas salvos, e conversa com o banco de dados.
+A aplicação é organizada em três camadas: front-end, API e banco de dados.
+
+No front-end, o editor Blockly produz a estrutura do programa montado pelo usuário. A partir dessa mesma estrutura, o **interpretador** executa os comandos no **simulador** e o **gerador** produz o código em Portugol, garantindo que as duas saídas partam da mesma representação (RNF03).
+
+A API, em Node.js com Express, trata a autenticação e as operações sobre os programas salvos. O PostgreSQL armazena as contas, os programas e o progresso. Cada operação de leitura ou gravação verifica a identidade do usuário e a propriedade do programa.
+
+![Arquitetura do sistema](arquitetura.png)
+
+*Figura 1 — Arquitetura do sistema (a mesma do documento de planejamento).*
+
+O diagrama abaixo detalha os mesmos componentes e fluxos:
 
 ```mermaid
 flowchart LR
-    U[Usuário] --> F[Interface React]
-    F --> B[Área de blocos]
-    F --> R[Palco do robô]
-    F --> G[Gerador Portugol e C]
-    F --> S[Servidor]
-    S --> A[Login Google]
-    S --> D[(Banco de dados)]
+    U[Usuário] --> E[Editor Blockly]
+    subgraph Front-end React
+        E -->|estrutura do programa| I[Interpretador]
+        E -->|estrutura do programa| G[Gerador de Portugol]
+        I --> S[Simulador SVG]
+        G --> P[Painel de código]
+        L[Login Google]
+    end
+    L -->|ID token| API[API Express]
+    E -->|salvar / abrir| API
+    API -->|valida token| GO[Google]
+    API --> DB[(PostgreSQL)]
 ```
 
 ## Partes do sistema
 
 | Parte | O que faz |
 |---|---|
-| Área de blocos | Deixa o usuário montar o programa |
-| Palco do robô | Mostra o robô andando na tela |
-| Gerador de código | Transforma os blocos em Portugol ou C |
-| Servidor | Cadastro, login e programas salvos |
-| Banco de dados | Guarda usuários e programas |
+| Editor Blockly | Permite montar o programa com blocos |
+| Interpretador | Executa o programa comando a comando e mantém o robô dentro da área |
+| Simulador | Mostra o robô andando na tela (SVG) |
+| Gerador de Portugol | Transforma o programa em pseudocódigo Portugol |
+| Login Google | Obtém o ID token da conta Google no navegador |
+| API | Valida o token, cria o usuário no primeiro acesso e gerencia os programas salvos |
+| Banco de dados | Guarda usuários, programas e progresso |
 
-## Decisões em aberto
-
-- NestJS ou Express no servidor
-- Banco relacional ou MongoDB
+O interpretador e o gerador são módulos independentes, sem dependência da interface, para facilitar os testes automatizados (RNF05).

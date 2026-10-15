@@ -1,8 +1,21 @@
-# Ferramenta de programação em blocos
+# BlocoBot — programando passo a passo
 
-Projeto da disciplina Oficina 2 (UTFPR).
+Projeto da disciplina Oficina de Integração 2 (UTFPR), desenvolvido para o projeto de extensão [ELLP — Ensino Lúdico de Lógica e Programação](https://www.utfpr.edu.br/campus/cornelioprocopio/extensao/atividades-extensao/projeto-de-extensao-ellp-ensino-ludico-de-logica-e-programacao).
 
-O usuário monta um programa arrastando blocos e a ferramenta gera o código em Portugol e em C. Os blocos controlam os movimentos básicos de um robô (frente, trás, direita, esquerda), além de repetir e da condicional Se. O cadastro é feito no sistema e o login pode ser feito com a conta Google.
+O BlocoBot é uma aplicação web educativa de programação em blocos. O usuário monta um programa encaixando blocos e controla um robô virtual na tela: frente, trás, direita, esquerda, repetir (1 a 10 vezes) e a condição Se (robô na borda). A cada alteração, o programa é traduzido automaticamente para Portugol. O acesso é feito somente com a conta Google, e o cadastro é criado automaticamente no primeiro login.
+
+## Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [Descrição do sistema](docs/descricao-do-sistema.md) | Proposta, objetivos, limites e usuários |
+| [Requisitos](requisitos/README.md) | Requisitos funcionais, não funcionais e regras de negócio |
+| [Arquitetura](docs/arquitetura.md) | Componentes e fluxos do sistema |
+| [Tecnologias](docs/tecnologias.md) | Ferramentas adotadas e decisões |
+| [Testes](docs/testes.md) | Estratégia de testes automatizados ([plano e casos de teste](tests/)) |
+| [Processo e cronograma](docs/processo.md) | Scrum, issues, Kanban, definição de pronto e datas |
+
+Quadro Kanban: [BlocoBot — Kanban](https://github.com/users/LunnaFM/projects/1) (GitHub Projects). As histórias de usuário e tarefas de cada sprint estão nas [issues](https://github.com/mariaferleal/Projeto-oficina2/issues), organizadas pelos milestones Preparação, Sprint 1 e Sprint 2. As tarefas de cada história ficam em sub-issues, com responsável e prazo.
 
 ## Equipe
 
@@ -14,7 +27,7 @@ O usuário monta um programa arrastando blocos e a ferramenta gera o código em 
 | Ricardo | Back e banco |
 | Paulo | Testes e banco |
 
-Todos se ajudam. O responsável de cada área garante a entrega e cuida dos documentos daquela área.
+Todos se ajudam. O responsável de cada área garante a entrega e cuida dos documentos daquela área. As atividades de cada integrante ficam registradas nas issues, commits e pull requests.
 
 ## Como rodar
 
@@ -22,40 +35,45 @@ Você precisa do Docker instalado.
 
 ```
 cp .env.example .env
-docker compose up --build
+docker compose --profile dev up --build
 ```
 
 - Interface em http://localhost:5173
 - Servidor em http://localhost:3000
 
-## Como rodar os testes
+## Como rodar os testes unitários
 
 ```
 cd frontend && npm test
 cd backend && npm test
 ```
 
+## Como rodar os testes ponta a ponta (E2E)
+
+**Ligue o ambiente de testes em segundo plano (-d)**
+```
+docker compose --profile test up -d
+```
+
+**Rode os testes E2E**
+```
+cd tests && npm run test
+```
+
+**Ao finalizar, desligue o ambiente**
+```
+docker compose --profile test down
+```
+
 Os testes também rodam sozinhos no GitHub Actions a cada envio de código. Veja mais em `docs/testes.md`.
 
-## Planejamento
+## Cronograma
 
-| Período | Atividade |
-|---|---|
-| 28/09 a 02/10 | Montar o Jira e cadastrar os requisitos |
-| 28/09 a 02/10 | Fechar as perguntas para o professor |
-| 30/09 | Reunião com o professor (prevista) |
-| 28/09 a 02/10 | Desenhar os fluxos das telas |
-| 28/09 a 02/10 | Escolher as ferramentas do front |
-| 28/09 a 02/10 | Decidir servidor e banco de dados |
-| 05/10 a 09/10 | Criar o repositório e enviar os arquivos iniciais |
-| 05/10 a 09/10 | Escrever o README e a descrição do sistema |
-| 05/10 a 09/10 | Montar o ambiente do servidor e do banco |
-| 05/10 a 09/10 | Montar o ambiente do front e o protótipo das telas |
-| 05/10 a 09/10 | Definir os testes e a automação |
-| 05/10 a 09/10 | Fazer o diagrama de arquitetura |
-| 05/10 a 09/10 | Fechar a lista de requisitos funcionais |
-| 13/10 | Revisar todos os documentos e o repositório |
-| 14/10 | Reunião com o professor (prevista) |
-| 15/10 | Ensaiar a apresentação |
-| 16/10 | Apresentação |
+| Etapa | Período | Entrega |
+|---|---|---|
+| Planejamento | até 28/09 | Documento de planejamento |
+| Preparação | 29/09 a 16/10 | Fim do planejamento, apresentado na reunião presencial de 16/10 |
+| Sprint 1 | 17/10 a 07/11 | Base da aplicação |
+| Sprint 2 | 08/11 a 30/11 | Entrega final em 30/11 |
 
+Reuniões com o professor a cada duas semanas: 16/10, 30/10, 13/11 e 30/11 (datas de 30/10 e 13/11 a confirmar). Detalhes de cada sprint em [`docs/processo.md`](docs/processo.md).

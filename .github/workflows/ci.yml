@@ -38,3 +38,45 @@ jobs:
       - name: Rodar testes
         if: ${{ hashFiles('backend/package-lock.json') != '' }}
         run: npm test --if-present
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Enquanto front e back não têm package.json, os containers não sobem; o job só roda depois disso
+      - name: Verificar se front e back já existem
+        id: apps
+        run: |
+          if [ -f frontend/package.json ] && [ -f backend/package.json ]; then echo "prontos=true" >> "$GITHUB_OUTPUT"; else echo "prontos=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Configurar Variáveis de Ambiente
+        if: steps.apps.outputs.prontos == 'true'
+        run: |
+          echo "DB_TEST_USER=postgres" >> .env
+          echo "DB_TEST_PASSWORD=admin" >> .env
+          echo "DB_TEST_NAME=blocoBot_test_db" >> .env
+          echo "DB_TEST_PORT=5433" >> .env
+
+      - name: Subir containers de teste
+        if: steps.apps.outputs.prontos == 'true'
+        run: docker compose --profile test up -d --build
+
+      - uses: actions/setup-node@v4
+        if: steps.apps.outputs.prontos == 'true'
+        with:
+          node-version: 20
+
+      - name: Instalar Playwright e dependências
+        if: steps.apps.outputs.prontos == 'true'
+        working-directory: tests
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Executar testes de tela (Playwright)
+        if: steps.apps.outputs.prontos == 'true'
+        working-directory: tests
+        run: npm run test
+
+      - name: Desligar infraestrutura
+        if: always() && steps.apps.outputs.prontos == 'true'
+        run: docker compose --profile test down
