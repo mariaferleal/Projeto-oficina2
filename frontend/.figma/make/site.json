@@ -1,0 +1,11 @@
+{
+  "title": "teste blocobot",
+  "description": "Engage children and teens in programming logic by using block-based coding to control a virtual robot, fostering creativity and problem-solving skills.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
