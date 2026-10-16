@@ -98,6 +98,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Instalar dependências do frontend
+        if: steps.apps.outputs.prontos == 'true'
+        working-directory: frontend
+        run: npm ci
+
       - name: Instalar Playwright e dependências
         if: steps.apps.outputs.prontos == 'true'
         working-directory: tests
