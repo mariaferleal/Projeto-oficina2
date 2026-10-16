@@ -29,15 +29,48 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Instalar dependências
         if: ${{ hashFiles('backend/package-lock.json') != '' }}
         run: npm ci
-      - name: Rodar testes
+
+      # Executa o script de coverage configurado no package.json
+      - name: Rodar testes com cobertura
         if: ${{ hashFiles('backend/package-lock.json') != '' }}
-        run: npm test --if-present
+        run: npm run test:coverage
+
+      # Publica o relatório HTML e arquivos de cobertura como artefato para download
+      - name: Publicar relatório de cobertura como artefato
+        uses: actions/upload-artifact@v4
+        if: always() && hashFiles('backend/package-lock.json') != ''
+        with:
+          name: backend-coverage-report
+          path: backend/coverage/
+
+      # Lê o coverage-summary.json e renderiza a tabela no resumo da execução do CI
+      - name: Exibir percentual de cobertura no resumo do CI
+        if: always() && hashFiles('backend/package-lock.json') != ''
+        run: |
+          echo "### 📊 Cobertura de Testes - Backend" >> $GITHUB_STEP_SUMMARY
+          node -e "
+            const fs = require('fs');
+            const summaryPath = 'coverage/coverage-summary.json';
+            if (fs.existsSync(summaryPath)) {
+              const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8')).total;
+              console.log('| Métrica | Percentual |');
+              console.log('| :--- | :--- |');
+              console.log('| Linhas | ' + summary.lines.pct + '% |');
+              console.log('| Funções | ' + summary.functions.pct + '% |');
+              console.log('| Branches | ' + summary.branches.pct + '% |');
+              console.log('| Declarações | ' + summary.statements.pct + '% |');
+            } else {
+              console.log('⚠️ Arquivo coverage-summary.json não encontrado.');
+            }
+          " >> $GITHUB_STEP_SUMMARY
 
   e2e:
     runs-on: ubuntu-latest

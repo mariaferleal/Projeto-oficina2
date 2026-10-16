@@ -11,7 +11,7 @@ Responsável: Paulo.
 
 A cobertura é acompanhada por módulo e por sprint, com meta de pelo menos 80% no interpretador e no gerador.
 
-O plano de teste, os casos de teste e a matriz de rastreabilidade estão na pasta [`tests/`](../tests/).
+O plano de teste, os casos de teste e a matriz de rastreabilidade estão na pasta [`tests/docs`](../tests/docs).
 
 ## Quando rodam
 
