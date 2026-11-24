@@ -12,15 +12,32 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
       - name: Instalar dependências
-        if: ${{ hashFiles('frontend/package-lock.json') != '' }}
         run: npm ci
-      - name: Rodar testes
-        if: ${{ hashFiles('frontend/package-lock.json') != '' }}
-        run: npm test --if-present
+
+      - name: Rodar testes com cobertura
+        run: npm run test:coverage
+
+      - name: Conferir se a aplicação compila
+        run: npm run build
+
+      - name: Publicar relatório de cobertura como artefato
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage-report
+          path: frontend/coverage/
+
+      - name: Exibir percentual de cobertura no resumo do CI
+        if: always()
+        run: node ../.github/scripts/resumo-cobertura.cjs "Frontend" coverage/coverage-summary.json >> "$GITHUB_STEP_SUMMARY"
 
   backend:
     runs-on: ubuntu-latest
@@ -33,88 +50,81 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
       - name: Instalar dependências
-        if: ${{ hashFiles('backend/package-lock.json') != '' }}
         run: npm ci
 
       # Executa o script de coverage configurado no package.json
       - name: Rodar testes com cobertura
-        if: ${{ hashFiles('backend/package-lock.json') != '' }}
         run: npm run test:coverage
 
       # Publica o relatório HTML e arquivos de cobertura como artefato para download
       - name: Publicar relatório de cobertura como artefato
         uses: actions/upload-artifact@v4
-        if: always() && hashFiles('backend/package-lock.json') != ''
+        if: always()
         with:
           name: backend-coverage-report
           path: backend/coverage/
 
       # Lê o coverage-summary.json e renderiza a tabela no resumo da execução do CI
       - name: Exibir percentual de cobertura no resumo do CI
-        if: always() && hashFiles('backend/package-lock.json') != ''
-        run: |
-          echo "### 📊 Cobertura de Testes - Backend" >> $GITHUB_STEP_SUMMARY
-          node -e "
-            const fs = require('fs');
-            const summaryPath = 'coverage/coverage-summary.json';
-            if (fs.existsSync(summaryPath)) {
-              const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8')).total;
-              console.log('| Métrica | Percentual |');
-              console.log('| :--- | :--- |');
-              console.log('| Linhas | ' + summary.lines.pct + '% |');
-              console.log('| Funções | ' + summary.functions.pct + '% |');
-              console.log('| Branches | ' + summary.branches.pct + '% |');
-              console.log('| Declarações | ' + summary.statements.pct + '% |');
-            } else {
-              console.log('⚠️ Arquivo coverage-summary.json não encontrado.');
-            }
-          " >> $GITHUB_STEP_SUMMARY
+        if: always()
+        run: node ../.github/scripts/resumo-cobertura.cjs "Backend" coverage/coverage-summary.json >> "$GITHUB_STEP_SUMMARY"
 
   e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Enquanto front e back não têm package.json, os containers não sobem; o job só roda depois disso
-      - name: Verificar se front e back já existem
-        id: apps
-        run: |
-          if [ -f frontend/package.json ] && [ -f backend/package.json ]; then echo "prontos=true" >> "$GITHUB_OUTPUT"; else echo "prontos=false" >> "$GITHUB_OUTPUT"; fi
-      - name: Configurar Variáveis de Ambiente
-        if: steps.apps.outputs.prontos == 'true'
-        run: |
-          echo "DB_TEST_USER=postgres" >> .env
-          echo "DB_TEST_PASSWORD=admin" >> .env
-          echo "DB_TEST_NAME=blocoBot_test_db" >> .env
-          echo "DB_TEST_PORT=5433" >> .env
-
-      - name: Subir containers de teste
-        if: steps.apps.outputs.prontos == 'true'
-        run: docker compose --profile test up -d --build
 
       - uses: actions/setup-node@v4
-        if: steps.apps.outputs.prontos == 'true'
         with:
           node-version: 20
 
+      - name: Configurar variáveis de ambiente
+        run: cp .env.example .env
+
+      # As dependências são instaladas antes de subir os containers: o volume do Docker
+      # cria pastas node_modules como root e o npm ci deixaria de conseguir escrever nelas.
       - name: Instalar dependências do frontend
-        if: steps.apps.outputs.prontos == 'true'
         working-directory: frontend
         run: npm ci
 
       - name: Instalar Playwright e dependências
-        if: steps.apps.outputs.prontos == 'true'
         working-directory: tests
         run: |
           npm ci
           npx playwright install --with-deps
 
+      # A interface é iniciada pelo próprio Playwright (webServer), então aqui sobem só a API e o banco.
+      - name: Subir API e banco de teste
+        run: docker compose --profile test up -d --build postgres_test backend_test
+
+      - name: Esperar a API responder
+        run: |
+          for tentativa in $(seq 1 60); do
+            if curl -sf http://localhost:3001/health > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          echo "A API de teste não respondeu a tempo."
+          exit 1
+
       - name: Executar testes de tela (Playwright)
-        if: steps.apps.outputs.prontos == 'true'
         working-directory: tests
         run: npm run test
 
+      - name: Mostrar logs da API quando algo falha
+        if: failure()
+        run: docker compose --profile test logs backend_test postgres_test
+
+      - name: Publicar relatório do Playwright
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: tests/playwright-report/
+
       - name: Desligar infraestrutura
-        if: always() && steps.apps.outputs.prontos == 'true'
+        if: always()
         run: docker compose --profile test down
