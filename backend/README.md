@@ -58,7 +58,7 @@ Feito uma vez, no [Google Cloud Console](https://console.cloud.google.com/). A c
    - usuários de teste: os e-mails do grupo e o do professor.
 3. Em **APIs e serviços → Credenciais → Criar credenciais → ID do cliente OAuth**:
    - tipo de aplicativo: **Aplicativo da Web**;
-   - origens JavaScript autorizadas: `http://localhost:5173`;
+   - origens JavaScript autorizadas: `http://localhost:5173` e `http://localhost`;
    - URIs de redirecionamento: nenhum, porque o login usa o botão do Google na própria página.
 4. Copiar o Client ID gerado para o `.env`. A chave secreta do cliente não é usada.
 
