@@ -88,6 +88,8 @@ afterEach(() => {
 const entrar = async () => {
   render(<App />);
   await screen.findByTestId("editor-falso");
+  // O código só aparece depois que o editor entrega o programa ao App.
+  await screen.findByText("frente()");
 };
 
 describe("login (RF01)", () => {
