@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import * as Blockly from "blockly/core";
 import BlockWorkspace, { createStartBlock, getStartBlock } from "./components/BlockWorkspace";
-import { STARTER_PROGRAMS, type SavedProgram, type WorkspaceState } from "./blockly/programs";
+import { type SavedProgram, type WorkspaceState } from "./blockly/programs";
+import GoogleLogin from "./components/GoogleLogin";
+import * as api from "./api";
 
 type IconName =
   | "arrow-up"
@@ -91,7 +93,15 @@ function Logo() {
   );
 }
 
-function Login({ onLogin }: { onLogin: () => void }) {
+function Login({
+  onGoogle,
+  onTest,
+  error,
+}: {
+  onGoogle: (idToken: string) => void;
+  onTest: () => void;
+  error: string | null;
+}) {
   return (
     <main className="login">
       <section className="login__intro">
@@ -114,15 +124,13 @@ function Login({ onLogin }: { onLogin: () => void }) {
           <RobotPreview />
           <div className="login__welcome">Olá! Eu sou o Bipi.</div>
           <p>Entre para criar, salvar e continuar seus programas.</p>
-          <button className="google-button" onClick={onLogin} type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.5-.2-2.2H12v4.3h5.4a4.6 4.6 0 0 1-2 3v2.8h3.5c2-1.9 3.2-4.6 3.2-7.9Z" />
-              <path fill="#34A853" d="M12 22c2.9 0 5.3-1 7-2.6l-3.5-2.8c-1 .7-2.2 1-3.5 1-2.8 0-5.2-1.8-6-4.4H2.4V16A10 10 0 0 0 12 22Z" />
-              <path fill="#FBBC05" d="M6 13.2A6 6 0 0 1 6 9.4V6.6H2.4a10 10 0 0 0 0 9.4L6 13.2Z" />
-              <path fill="#EA4335" d="M12 6.4c1.6 0 3 .6 4.1 1.6l3.1-3A10 10 0 0 0 2.4 6.6L6 9.4c.8-2.5 3.2-4 6-4Z" />
-            </svg>
-            Entrar com Google
-          </button>
+          <GoogleLogin clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID} onCredential={onGoogle} />
+          {import.meta.env.VITE_LOGIN_TESTE === "true" && (
+            <button className="google-button" onClick={onTest} type="button">
+              Entrar como teste
+            </button>
+          )}
+          {error && <p className="login__error" role="alert">{error}</p>}
           <small>Ao entrar, você aceita usar seus dados apenas para salvar seu progresso.</small>
         </div>
       </section>
@@ -275,7 +283,7 @@ function Editor({
   onSave,
 }: {
   initialState: WorkspaceState | null;
-  onSave: (state: WorkspaceState, blockCount: number) => void;
+  onSave: (state: WorkspaceState, blockCount: number) => Promise<void>;
 }) {
   const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
   const cancelled = useRef(false);
@@ -353,11 +361,15 @@ function Editor({
     setNotice(null);
   };
 
-  const save = () => {
+  const save = async () => {
     const workspace = workspaceRef.current;
     if (!workspace) return;
-    onSave(Blockly.serialization.workspaces.save(workspace), blockCount);
-    setNotice({ type: "success", text: "Programa salvo na sua coleção." });
+    try {
+      await onSave(Blockly.serialization.workspaces.save(workspace), blockCount);
+      setNotice({ type: "success", text: "Programa salvo na sua coleção." });
+    } catch {
+      setNotice({ type: "error", text: "Não foi possível salvar. Tente de novo." });
+    }
   };
 
   return (
@@ -451,14 +463,68 @@ function Editor({
   );
 }
 
+/** Converte um programa da API para o formato da tela "Meus programas". */
+export function toSavedProgram(programa: api.ProgramaSalvo): SavedProgram {
+  const count = (JSON.stringify(programa.blocos).match(/"type":"bb_(?!start)/g) ?? []).length;
+  const date = new Date(programa.atualizado_em);
+  return {
+    id: programa.id,
+    name: programa.titulo,
+    updated: Number.isNaN(date.getTime())
+      ? ""
+      : date.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }),
+    blockCount: count,
+    state: programa.blocos,
+  };
+}
+
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState<api.Usuario | null>(null);
+  const [checking, setChecking] = useState(true);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [page, setPage] = useState<"editor" | "saved">("editor");
-  const [programs, setPrograms] = useState<SavedProgram[]>(STARTER_PROGRAMS);
+  const [programs, setPrograms] = useState<SavedProgram[]>([]);
   const [currentState, setCurrentState] = useState<WorkspaceState | null>(null);
   const [editorKey, setEditorKey] = useState(0);
 
-  if (!loggedIn) return <Login onLogin={() => setLoggedIn(true)} />;
+  const loadPrograms = () =>
+    api.listarProgramas().then((items) => setPrograms(items.map(toSavedProgram))).catch(() => setPrograms([]));
+
+  useEffect(() => {
+    api.usuarioDaSessao().then((current) => {
+      setUser(current);
+      setChecking(false);
+      if (current) loadPrograms();
+    });
+  }, []);
+
+  const signIn = async (enter: () => Promise<api.Usuario>) => {
+    setLoginError(null);
+    try {
+      setUser(await enter());
+      loadPrograms();
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : "Não foi possível entrar.");
+    }
+  };
+
+  const signOut = () => {
+    api.limparSessao();
+    setUser(null);
+    setPrograms([]);
+    setPage("editor");
+  };
+
+  if (checking) return null;
+  if (!user) {
+    return (
+      <Login
+        onGoogle={(idToken) => signIn(() => api.entrarComGoogle(idToken))}
+        onTest={() => signIn(api.entrarComoTeste)}
+        error={loginError}
+      />
+    );
+  }
 
   const openProgram = (program: SavedProgram) => {
     setCurrentState(program.state);
@@ -474,27 +540,24 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Header page={page} onPage={setPage} onLogout={() => setLoggedIn(false)} />
+      <Header page={page} onPage={setPage} onLogout={signOut} />
       {page === "editor" ? (
         <Editor
           key={editorKey}
           initialState={currentState}
-          onSave={(state, blockCount) => {
-            const next: SavedProgram = {
-              id: `saved-${Date.now()}`,
-              name: `Meu programa ${programs.length + 1}`,
-              updated: "agora",
-              blockCount,
-              state,
-            };
-            setPrograms((items) => [next, ...items]);
+          onSave={async (state) => {
+            const saved = await api.salvarPrograma(`Meu programa ${programs.length + 1}`, state);
+            setPrograms((items) => [toSavedProgram(saved), ...items]);
           }}
         />
       ) : (
         <SavedPrograms
           programs={programs}
           onOpen={openProgram}
-          onDelete={(id) => setPrograms((items) => items.filter((program) => program.id !== id))}
+          onDelete={async (id) => {
+            await api.excluirPrograma(id);
+            setPrograms((items) => items.filter((program) => program.id !== id));
+          }}
           onNew={newProgram}
         />
       )}

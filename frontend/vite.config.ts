@@ -7,14 +7,16 @@ import siteConfiguration from './.figma/make/site.json'
 
 
 // Vite config — https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === 'development'
 
   return {
+    // O caminho /Projeto-oficina2/ só vale para o build publicado no GitHub Pages.
+    // Em desenvolvimento e nos testes a aplicação roda na raiz.
     base: process.env.FIGMA_PUBLIC_URL
     ? `${process.env.FIGMA_PUBLIC_URL}/`
-    : '/Projeto-oficina2/',
+    : command === 'build' ? '/Projeto-oficina2/' : '/',
     //base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : '/',
     build: {
       sourcemap: emitSourcemaps ? 'inline' : false,
@@ -28,6 +30,8 @@ react(),
       figmaReactRefreshBoundaryFallback(),
       figmaMakeKitPlugin({ storiesGlob: '/src/**/*.stories.{ts,tsx,js,jsx}' }),
     ],
+    // O .env fica na raiz do repositório, junto com o do back-end.
+    envDir: path.resolve(__dirname, '..'),
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
@@ -35,7 +39,8 @@ react(),
     },
     server: {
       host: process.env.FIGMA_DEV_SERVER_HOST || '0.0.0.0',
-      port: parseInt(process.env.PORT || '8443'),
+      // A variável PORT do .env é a da API (3000); a interface usa a 5173.
+      port: parseInt(process.env.FIGMA_DEV_SERVER_PORT || '5173'),
       strictPort: true,
       watch: {
         ignored: [
@@ -45,7 +50,7 @@ react(),
     },
     preview: {
       host: process.env.FIGMA_DEV_SERVER_HOST || '0.0.0.0',
-      port: parseInt(process.env.PORT || '8443'),
+      port: parseInt(process.env.FIGMA_DEV_SERVER_PORT || '5173'),
     },
   }
 })
