@@ -73,6 +73,12 @@ describe('POST /api/auth/google (HU01, HU02)', () => {
     expect(resposta.status).toBe(401);
   });
 
+  it('recusa token do Google malformado', async () => {
+    verifyIdToken.mockRejectedValue(new Error('Wrong number of segments in token: x'));
+    const resposta = await request(app).post('/api/auth/google').send({ idToken: 'x' });
+    expect(resposta.status).toBe(401);
+  });
+
   it('recusa conta Google com e-mail não verificado', async () => {
     tokenGoogleValido(false);
     const resposta = await request(app).post('/api/auth/google').send({ idToken: 'abc' });
