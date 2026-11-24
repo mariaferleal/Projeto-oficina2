@@ -44,26 +44,31 @@ docker compose --profile dev up --build
 ## Como rodar os testes unitários
 
 ```
-cd frontend && npm test
-cd backend && npm test
+cd frontend && npm install && npm test
+cd backend && npm install && npm test
 ```
+
+Para ver a cobertura, troque `npm test` por `npm run test:coverage`. O relatório fica na pasta `coverage/` de cada projeto.
 
 ## Como rodar os testes ponta a ponta (E2E)
 
-**Ligue o ambiente de testes em segundo plano (-d)**
+**Ligue a API e o banco de testes em segundo plano (-d)**
 ```
-docker compose --profile test up -d
+docker compose --profile test up -d postgres_test backend_test
 ```
 
-**Rode os testes E2E**
+**Rode os testes E2E** (o Playwright sobe a interface sozinho, na porta 5174)
 ```
-cd tests && npm run test
+cd frontend && npm install
+cd ../tests && npm install && npx playwright install && npm run test
 ```
 
 **Ao finalizar, desligue o ambiente**
 ```
 docker compose --profile test down
 ```
+
+No ambiente de teste a tela de login mostra o botão "Entrar como teste", que dispensa a conta Google. Ele só aparece com `VITE_LOGIN_TESTE=true` e só funciona quando a API roda com `NODE_ENV=test`.
 
 Os testes também rodam sozinhos no GitHub Actions a cada envio de código. Veja mais em `docs/testes.md`.
 
