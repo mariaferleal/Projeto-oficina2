@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     globals: true,
+    setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],
@@ -13,6 +14,9 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/main.tsx',
+        'scripts/**',
+        'tests/**',
+        'src/index.ts',
      ],
     },
   },

@@ -21,6 +21,8 @@ services:
     ports:
       - "3000:3000"
     env_file: .env
+    # Espera o banco subir: se a migration falhar na primeira tentativa, o container reinicia
+    restart: on-failure
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -56,6 +58,8 @@ services:
     environment:
       # sobrescrevre para chamar o backend do teste
       - VITE_API_URL=http://localhost:3001
+      # mostra o botão "Entrar como teste" (só existe no ambiente de teste)
+      - VITE_LOGIN_TESTE=true
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -70,7 +74,12 @@ services:
       ports:
         - "3001:3000" # Exposto na 3001 pra evitar conflito
       env_file: .env
+      restart: on-failure
       environment:
+        # Libera o login simulado (POST /api/auth/teste) usado pelos testes E2E
+        - NODE_ENV=test
+        # Endereços da interface nos testes (container frontend_test e Playwright)
+        - FRONTEND_URL=http://localhost:5174,http://127.0.0.1:5174
         # sobrescreve a variável de database para apontar para o banco de teste
         - DATABASE_URL=postgresql://${DB_TEST_USER}:${DB_TEST_PASSWORD}@postgres_test:5432/${DB_TEST_NAME}
       volumes:
