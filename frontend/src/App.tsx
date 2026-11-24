@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import * as Blockly from "blockly/core";
-import BlockWorkspace, { createStartBlock, getStartBlock } from "./components/BlockWorkspace";
+import BlockWorkspace, { createStartBlock } from "./components/BlockWorkspace";
 import { type SavedProgram, type WorkspaceState } from "./blockly/programs";
 import GoogleLogin from "./components/GoogleLogin";
 import * as api from "./api";
+import { interpret, isEdge, validate, PROBLEM_MESSAGES, START_POSITION } from "./blockly/interpreter";
 
 type IconName =
   | "arrow-up"
@@ -172,10 +173,12 @@ function Robot({ x, y }: { x: number; y: number }) {
 }
 
 function Header({
+  name,
   page,
   onPage,
   onLogout,
 }: {
+  name: string;
   page: "editor" | "saved";
   onPage: (page: "editor" | "saved") => void;
   onLogout: () => void;
@@ -192,8 +195,8 @@ function Header({
         </button>
       </nav>
       <div className="profile">
-        <div className="avatar">L</div>
-        <span><b>Luiza</b><small>Aprendiz</small></span>
+        <div className="avatar">{name.trim().charAt(0).toUpperCase() || "?"}</div>
+        <span><b>{name}</b><small>Aprendiz</small></span>
         <button onClick={onLogout} type="button" aria-label="Sair"><Icon name="logout" size={19} /></button>
       </div>
     </header>
@@ -262,21 +265,6 @@ function SavedPrograms({
 type Notice = { type: "error" | "success" | "edge"; text: string };
 
 const sleep = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
-const isEdge = (p: { x: number; y: number }) => p.x === 0 || p.x === 4 || p.y === 0 || p.y === 4;
-const clamp = (value: number) => Math.max(0, Math.min(4, value));
-const START_POSITION = { x: 2, y: 2 };
-
-/** Um bloco de repetição ou de condição vazio deixa o programa incompleto. */
-function isIncomplete(first: Blockly.Block | null): boolean {
-  for (let block = first; block; block = block.getNextBlock()) {
-    if (!block.isEnabled()) continue;
-    if (block.type === "bb_repeat" || block.type === "bb_if_edge") {
-      const inner = block.getInputTargetBlock("DO");
-      if (!inner || isIncomplete(inner)) return true;
-    }
-  }
-  return false;
-}
 
 function Editor({
   initialState,
@@ -302,53 +290,34 @@ function Editor({
 
   const run = async () => {
     const workspace = workspaceRef.current;
-    const first = workspace ? getStartBlock(workspace)?.getInputTargetBlock("DO") ?? null : null;
-    if (!workspace || !first || isIncomplete(first)) {
-      setNotice({
-        type: "error",
-        text: !first
-          ? "Encaixe pelo menos um bloco embaixo de Ao iniciar."
-          : "Há um bloco incompleto. Coloque algo dentro dele.",
-      });
+    if (!workspace) return;
+    const state = Blockly.serialization.workspaces.save(workspace);
+    const problem = validate(state);
+    if (problem) {
+      setNotice({ type: "error", text: PROBLEM_MESSAGES[problem] });
       return;
     }
 
     setRunning(true);
     setNotice(null);
-    let current = { ...position };
+    const result = interpret(state, position);
 
-    const execute = async (head: Blockly.Block | null): Promise<void> => {
-      for (let block = head; block; block = block.getNextBlock()) {
-        if (cancelled.current) return;
-        if (!block.isEnabled()) continue;
-        workspace.highlightBlock(block.id);
+    for (const step of result.steps) {
+      if (cancelled.current) return;
+      if (step.blockId) workspace.highlightBlock(step.blockId);
+      await sleep(step.kind === "move" ? 560 : 320);
+      if (step.kind === "move") setPosition(step.position);
+    }
 
-        if (block.type === "bb_repeat") {
-          await sleep(320);
-          const times = Number(block.getFieldValue("COUNT")) || 1;
-          for (let i = 0; i < times; i += 1) await execute(block.getInputTargetBlock("DO"));
-        } else if (block.type === "bb_if_edge") {
-          await sleep(320);
-          if (isEdge(current)) await execute(block.getInputTargetBlock("DO"));
-        } else {
-          await sleep(560);
-          current = {
-            x: clamp(current.x + (block.type === "bb_right" ? 1 : block.type === "bb_left" ? -1 : 0)),
-            y: clamp(current.y + (block.type === "bb_back" ? 1 : block.type === "bb_front" ? -1 : 0)),
-          };
-          setPosition(current);
-        }
-      }
-    };
-
-    await execute(first);
     if (cancelled.current) return;
     workspace.highlightBlock(null);
     setRunning(false);
     setNotice(
-      isEdge(current)
-        ? { type: "edge", text: "Borda alcançada! O Bipi não pode sair da área." }
-        : { type: "success", text: "Programa concluído. Muito bem!" },
+      result.truncated
+        ? { type: "error", text: "O programa ficou longo demais e foi interrompido." }
+        : isEdge(result.position)
+          ? { type: "edge", text: "Borda alcançada! O Bipi não pode sair da área." }
+          : { type: "success", text: "Programa concluído. Muito bem!" },
     );
   };
 
@@ -540,7 +509,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Header page={page} onPage={setPage} onLogout={signOut} />
+      <Header name={user.nome} page={page} onPage={setPage} onLogout={signOut} />
       {page === "editor" ? (
         <Editor
           key={editorKey}
