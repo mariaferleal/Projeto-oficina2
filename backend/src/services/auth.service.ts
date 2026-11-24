@@ -27,6 +27,8 @@ function erroDeTokenInvalido(erro: unknown): boolean {
     'invalid value for aud',
     'invalid value for iss',
     'jwt malformed',
+    'wrong number of segments',
+    "can't parse token",
   ].some((trecho) => mensagem.includes(trecho));
 }
 
